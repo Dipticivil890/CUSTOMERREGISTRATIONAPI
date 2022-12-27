@@ -1,0 +1,338 @@
+﻿
+@{
+    ViewData["Title"] = "Registration";
+}
+
+
+<h1>Registration</h1>
+<form>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group align-content-center">
+                <input id="txtid" hidden class="form-control " />
+            </div>
+            <div class="form-group">
+                <label>Enter Customer Code:</label> 
+                <input id="txtcode" maxlength="15" class="form-control txtCustomerCode" placeholder="Enter Your Customer Code" />
+                <span class="text-danger errCustCode"></span>
+            </div>
+            <div class="form-group">
+                Enter Customer Name:
+                <input id="txtname" class="form-control txtCustomerName" placeholder="Enter Name here" />
+                <span class="text-danger errCustName"></span>
+            </div>
+            <div class="form-group">
+                Enter Mobile Number:
+                <input id="txtmobile" class="form-control txtMobileNumber" maxlength="10" placeholder="Enter Mobile Number here" />
+                <span class="text-danger errCustMob"></span>
+            </div>
+            <div class="form-group">
+                Enter Email:
+                <input id="txtemail" class="form-control txtCustomerEmail" placeholder="Enter Email here" />
+                <span class="text-danger errCustEmail"></span>
+            </div>
+            <div class="form-group">
+                Select State
+                <select asp="StateId" id="StateId" asp-items="@(new SelectList( ViewBag.State,"StateId","StateName"))" class="form-control ddlState">
+                </select>
+                <span class="text-danger errState"></span>
+            </div>
+            <div class="form-group">
+                Select District
+                <select asp="distid" id="distid" class="form-control ddlDistrict">
+                </select>
+                <span class="text-danger errDistrict"></span>
+            </div>
+            <div class="form-group">
+                Enter City:
+                <input id="txtcity" class="form-control txtCustCity" placeholder="Enter Your City Name" />
+                <span class="text-danger errCustCity"></span>
+            </div>
+            <div class="form-group">
+                Enter Pincode:
+                <input id="txtpincode" class="form-control txtCustPin" placeholder="Enter Your Address Pin" />
+                <span class="text-danger errCustPin"></span>
+            </div>
+            <div class="form-group">
+                Select Gender:<br />
+                <input type="radio" id="custgen" name="custgen" class="s_type" value="Male" checked />
+                <label for="custgen">Male</label>
+                <input type="radio" id="custgen" name="custgen" class="s_type" value="Female" />
+                <label for="custgen">Female</label>
+            </div>
+            <div class="form-group">
+                Enter Address:
+                <textarea id="txtadd"></textarea>
+                <span class="text-danger errCustAdd"></span>
+            </div>
+            <div class="form-group">
+                <input type="button" id="Save" value="Save" class="btn btn-primary btnSaveUpdate " onclick="return Validation()" />
+                <input type="button" id="Update" value="Update" class="btn btn-primary btnSaveUpdate" />
+            </div>
+
+        </div>
+    </div>
+</form>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript">
+
+    $('.ddlState').change(function (e) {
+        var StateId = $('.ddlState option:selected').val();
+        if (StateId != 0) {
+            $('.errState').text();
+            return true;
+        }
+        else {
+            $('.errState').text('Please Select State');
+            return false;
+        }
+    });
+    $('.ddlDistrict').change(function (e) {
+        var Distid = $('.ddlDistrict option:selected').val();
+        if (Distid != 0) {
+            $('.errDistrict').text();
+            return true;
+        }
+        else {
+            $('.errDistrict').text('Please Select District');
+            return false;
+        }
+    });
+    $('.txtCustomerCode').keyup(function (e) {
+        var CustomerCode = $('.txtCustomerCode').val();
+        if (CustomerCode != '') {
+            $('.errCustCode').text();
+            return true;
+        }
+        else {
+            $('.errCustCode').text('Please enter Customer Code');
+            return false;
+        }
+    });
+    $('.txtCustomerName').keyup(function (e) {
+        var CustomerName = $('.txtCustomerName').val();
+        if (CustomerName != '') {
+            $('.errCustName').text();
+            return true;
+        }
+        else {
+            $('.errCustName').text('Please enter Name');
+            return false;
+        }
+    });
+    $('.txtMobileNumber').keyup(function (e) {
+        var CustomerPhone = $('.txtMobileNumber').val();
+        if (CustomerPhone != '') {
+            $('.errCustMob').text();
+            return true;
+        }
+        else {
+            $('.errCustMob').text('Please enter Mobile Number');
+            return false;
+        }
+    });
+    $('.txtCustomerEmail').keyup(function (e) {
+        var CustomerEmail = $('.txtCustomerEmail').val();
+        if (CustomerEmail != '') {
+            $('.errCustEmail').text();
+            return true;
+        }
+        else {
+            $('.errCustEmail').text('Please enter Email');
+            return false;
+        }
+    });
+    $('.txtCustCity').keyup(function (e) {
+        var CustomerCity = $('.txtCustCity').val();
+        if (CustomerCity != '') {
+            $('.errCustCity').text();
+            return true;
+        }
+        else {
+            $('.errCustCity').text('Please enter City');
+            return false;
+        }
+    });
+
+    $('.txtCustPin').keyup(function (e) {
+        var CustomerEmail = $('.txtCustPin').val();
+        if (CustomerEmail != '') {
+            $('.errCustPin').text();
+            return true;
+        }
+        else {
+            $('.errCustPin').text('Please enter Pin');
+            return false;
+        }
+    });
+
+    $('#txtadd').keyup(function (e) {
+        var CustomerAddress = $('#txtadd').val();
+        if (CustomerAddress != '') {
+            $('.errCustAdd').text();
+            return true;
+        }
+        else {
+            $('.errCustAdd').text('Please enter Address');
+            return false;
+        }
+    });
+
+
+    function Validation() {
+        var chk = 0;
+        var CustomerCode = $("#txtcode").val();
+        var CustomerName = $("#txtname").val();
+        var CustomerPhone = $('.txtMobileNumber').val();
+        var CustomerEmail = $('.txtCustomerEmail').val();
+        var StateId = $('.ddlState option:selected').val();
+        var CustomerCity = $('.txtCustCity').val();
+        var CustomerEmail = $('.txtCustPin').val();
+        var CustomerAddress = $('#txtadd').val();
+        if (CustomerCode != '') {
+            $('.errCustCode').text();
+            chk = 1;
+        }
+        else {
+            $('.errCustCode').text('Please enter Customer Code');
+            chk = 0;
+        }
+        if (CustomerName != '') {
+            $('.errCustName').text();
+
+            chk = 1;
+        }
+        else {
+            $('.errCustName').text('Please enter Name');
+            chk = 0;
+        }
+
+        if (CustomerPhone != '') {
+            $('.errCustMob').text();
+            chk = 1;
+        }
+        else {
+            $('.errCustMob').text('Please enter Mobile Number');
+            chk = 0;
+        }
+
+        if (CustomerEmail != '') {
+            $('.errCustEmail').text();
+            chk = 1;
+        }
+        else {
+            $('.errCustEmail').text('Please enter Email');
+            chk = 0;
+        }
+        if (StateId != 0) {
+            $('.errState').text();
+
+        }
+        else {
+            $('.errState').text('Please Select State');
+        }
+        if (CustomerCity != '') {
+            $('.errCustCity').text();
+        }
+        else {
+            $('.errCustCity').text('Please enter City');
+        }
+        if (CustomerEmail != '') {
+            $('.errCustPin').text();
+        }
+        else {
+            $('.errCustPin').text('Please enter Pin');
+        }
+        if (CustomerAddress != '') {
+            $('.errCustAdd').text();
+        }
+        else {
+            $('.errCustAdd').text('Please enter Address');
+            return;
+        }
+
+        if (chk == 1) {
+            return true
+        }
+        else {
+            return false;
+        }
+
+
+    }
+
+    $(window).on("load", function () {
+        $("#Update").hide();
+    });
+
+    $(document).ready(function () {
+        $("#StateId").change(function () {
+            var id = $(this).val();
+            $("#distid").empty();
+            $.getJSON("/Home/District_Bind", { stateid: id }, function (data) {
+                data = JSON.parse(data);
+                var v = "<option>Select One</option>";
+                $.each(data, function (i, v1) {
+                    v += "<option value=" + v1.Value + ">" + v1.Text + "</option>";
+                });
+                $("#distid").html(v);
+            });
+        });
+    });
+
+    $(".btnSaveUpdate").click(function () {
+        var chkValidation = Validation();
+        if (chkValidation == true) {
+
+            var CustRecord = {
+                customerId: $("#txtid").val(), customerCode: $("#txtcode").val(), customerName: $("#txtname").val(), customerPhone: $("#txtmobile").val(), customerEmail: $("#txtemail").val(), stateId: $("#StateId").val(), districtId: $("#distid").val(), city: $("#txtcity").val(), pincode: $("#txtpincode").val(),
+                customerGender: $(".s_type:checked").val(), customerAddress: $("#txtadd").val()
+            };
+
+            $.post("/Home/Create", CustRecord, function () {
+
+                if (CustRecord != null & CustRecord.customerId == 0) {
+                    alert("Data Inserted")
+                    location.reload();
+                }
+                else {
+                    alert("Data Updated")
+                    location.reload();
+                }
+            });
+
+        }
+        else {
+            alert("Please Check your Data.");
+        }
+    });
+    $.getJSON("/Home/Edit", function (data) {
+        var prod = JSON.parse(data);
+        console.log(prod);
+        alert(prod);
+        $("#txtid").val(prod.CustomerId);
+        $("#txtcode").val(prod.CustomerCode);
+        $("#txtname").val(prod.CustomerName);
+        $("#txtmobile").val(prod.CustomerPhone);
+        $("#txtemail").val(prod.CustomerEmail);
+        $("#StateId").val(prod.StateId);
+        $("#distid").empty();
+        $.getJSON("Home/District_Bind", { stateid: prod.StateId }, function (data) {
+            data = JSON.parse(data);
+            $.each(data, function (i, Dist) {
+                $("#distid").append(
+                    `<option value=` + Dist.Value + `>` + Dist.Text + `</option>`
+                );
+                $("#distid").val(prod.DistrictId);
+            });
+        });
+        $("#txtcity").val(prod.City);
+        $("#txtpincode").val(prod.Pincode);
+
+        $('input:radio').each(function () {
+            if ($(this).val() == prod.CustomerGender)
+                $(this).attr('checked', 'checked');
+        });
+        $("#txtadd").val(prod.CustomerAddress);
+    });
+</script>
