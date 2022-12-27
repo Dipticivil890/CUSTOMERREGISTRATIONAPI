@@ -47,24 +47,18 @@ namespace CustomerRegistration.Controllers
             {
                 // Edit  Data Bind Code
                 Customer _custDtls = new Customer();
-                // APi CAll Res
-
-                // Assign this parameter _custDtls
+                HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/Customer/" + Id).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    string data = response.Content.ReadAsStringAsync().Result;
+                    _custDtls = JsonConvert.DeserializeObject<Customer>(data);
+                }
                 return View(_custDtls);
             }
             else
             {
                 FillState();
             }
-            //Customer custlist = new Customer();
-            //HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/Customer/" + id).Result;
-            //if (response.IsSuccessStatusCode)
-            //{
-            //    string data = response.Content.ReadAsStringAsync().Result;
-            //    custlist = JsonConvert.DeserializeObject<Customer>(data);
-            //}
-            //var jsonres = JsonConvert.SerializeObject(custlist);
-            //return Json(jsonres);
             return View();
 
         }
