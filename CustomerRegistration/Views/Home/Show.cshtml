@@ -49,6 +49,8 @@
     </tbody>
 </table>
 
+
+@*<a href="/ControlerName/Methodname?Id = 1">Edit</a>*@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script type="text/javascript">
 
@@ -66,7 +68,7 @@
             data = JSON.parse(data);
             $.each(data, function (i, SR) {
                 $("#table_school tbody").append(
-                    `<tr><td>` + SR.customerId + `</td><td>` + SR.customerCode + `</td><td>` + SR.customerName + `</td><td>` + SR.customerPhone + `</td><td>` + SR.customerEmail + `</td><td>` + SR.stateName + `</td><td>` + SR.districtName + `</td><td>` + SR.city + `</td><td>` + SR.pincode + `</td><td>` + SR.customerGender + `</td><td>` + SR.customerAddress + `</td><td><button class="btn btn-primary" onclick="Edit(` + SR.customerId + `)">Edit</button>&nbsp;&nbsp;<button class="btn btn-primary" onclick="Delete(` + SR.customerId + `)">Delete</button></td></tr>>`
+                    `<tr><td>` + SR.customerId + '</td><td>' + SR.customerCode + `</td><td>` + SR.customerName + `</td><td>` + SR.customerPhone + `</td><td>` + SR.customerEmail + `</td><td>` + SR.stateName + `</td><td>` + SR.districtName + `</td><td>` + SR.city + `</td><td>` + SR.pincode + `</td><td>` + SR.customerGender + `</td><td>` + SR.customerAddress + `</td><td><a href="/Home/Registration?Id = (` + SR.customerId + `)>Edit</a><button class="btn btn-primary" onclick="Edit(` + SR.customerId + `)">Edit</button>&nbsp;&nbsp;<button class="btn btn-primary" onclick="Delete(` + SR.customerId + `)">Delete</button></td></tr>>`
                 );
             });
         });
@@ -74,7 +76,7 @@
 
     function Edit(customerId) {
         alert(customerId);
-        $.post("/Home/Edit", { id: customerId }, function () {
+        $.post("/Home/Registration", { Id : customerId }, function () {
             var prod = JSON.parse(data);
             console.log(prod);
             alert(prod);
@@ -106,7 +108,7 @@
     }
 
     function Delete(CustomerId) {
-        $.post("Home/Delete", { id: CustomerId },
+        $.post("/Home/Delete", { id: CustomerId },
             function () {
                 alert("Data Deleted");
                 GetAllCustomer();

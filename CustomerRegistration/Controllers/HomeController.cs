@@ -41,9 +41,21 @@ namespace CustomerRegistration.Controllers
             return ViewBag.State;
         }
         //[HttpPost]
-        public IActionResult Registration()
+        public IActionResult Registration(int? Id)
         {
-            FillState();
+            if(Id != null) // Edit
+            {
+                // Edit  Data Bind Code
+                Customer _custDtls = new Customer();
+                // APi CAll Res
+
+                // Assign this parameter _custDtls
+                return View(_custDtls);
+            }
+            else
+            {
+                FillState();
+            }
             //Customer custlist = new Customer();
             //HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/Customer/" + id).Result;
             //if (response.IsSuccessStatusCode)
@@ -122,7 +134,6 @@ namespace CustomerRegistration.Controllers
         }
         public async Task<IActionResult> Edit(int id)
         {
-            
             Customer custlist = new Customer();
             HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/Customer/" + id).Result;
             if (response.IsSuccessStatusCode)

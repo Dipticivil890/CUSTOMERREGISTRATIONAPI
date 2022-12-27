@@ -1,4 +1,4 @@
-﻿
+﻿@model CustomerRegistration.Models.Customer;
 @{
     ViewData["Title"] = "Registration";
 }
@@ -6,73 +6,105 @@
 
 <h1>Registration</h1>
 <form>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="form-group align-content-center">
-                <input id="txtid" hidden class="form-control " />
-            </div>
-            <div class="form-group">
-                <label>Enter Customer Code:</label> 
-                <input id="txtcode" maxlength="15" class="form-control txtCustomerCode" placeholder="Enter Your Customer Code" />
-                <span class="text-danger errCustCode"></span>
-            </div>
-            <div class="form-group">
-                Enter Customer Name:
-                <input id="txtname" class="form-control txtCustomerName" placeholder="Enter Name here" />
-                <span class="text-danger errCustName"></span>
-            </div>
-            <div class="form-group">
-                Enter Mobile Number:
-                <input id="txtmobile" class="form-control txtMobileNumber" maxlength="10" placeholder="Enter Mobile Number here" />
-                <span class="text-danger errCustMob"></span>
-            </div>
-            <div class="form-group">
-                Enter Email:
-                <input id="txtemail" class="form-control txtCustomerEmail" placeholder="Enter Email here" />
-                <span class="text-danger errCustEmail"></span>
-            </div>
-            <div class="form-group">
-                Select State
-                <select asp="StateId" id="StateId" asp-items="@(new SelectList( ViewBag.State,"StateId","StateName"))" class="form-control ddlState">
-                </select>
-                <span class="text-danger errState"></span>
-            </div>
-            <div class="form-group">
-                Select District
-                <select asp="distid" id="distid" class="form-control ddlDistrict">
-                </select>
-                <span class="text-danger errDistrict"></span>
-            </div>
-            <div class="form-group">
-                Enter City:
-                <input id="txtcity" class="form-control txtCustCity" placeholder="Enter Your City Name" />
-                <span class="text-danger errCustCity"></span>
-            </div>
-            <div class="form-group">
-                Enter Pincode:
-                <input id="txtpincode" class="form-control txtCustPin" placeholder="Enter Your Address Pin" />
-                <span class="text-danger errCustPin"></span>
-            </div>
-            <div class="form-group">
-                Select Gender:<br />
-                <input type="radio" id="custgen" name="custgen" class="s_type" value="Male" checked />
-                <label for="custgen">Male</label>
-                <input type="radio" id="custgen" name="custgen" class="s_type" value="Female" />
-                <label for="custgen">Female</label>
-            </div>
-            <div class="form-group">
-                Enter Address:
-                <textarea id="txtadd"></textarea>
-                <span class="text-danger errCustAdd"></span>
-            </div>
-            <div class="form-group">
-                <input type="button" id="Save" value="Save" class="btn btn-primary btnSaveUpdate " onclick="return Validation()" />
-                <input type="button" id="Update" value="Update" class="btn btn-primary btnSaveUpdate" />
-            </div>
-
-        </div>
-    </div>
+    <table border="0" align="center">
+        <thead>
+            <tr align="center">
+                <th colspan="2"><h1>REGISTRATION FORM</h1></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td>
+                    <input id="txtid" hidden class="form-control " />
+                </td>
+            </tr>
+            <tr>
+                <td>Enter Customer Code:</td>
+                <td>
+                    <input id="txtcode" maxlength="15" class="form-control txtCustomerCode" placeholder="Enter Customer Code" />
+                    <span class="text-danger errCustCode"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Enter Customer Name:</td>
+                <td>
+                    <input id="txtname" class="form-control txtCustomerName" placeholder="Enter Customer Name" />
+                    <span class="text-danger errCustName"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Enter Mobile Number:</td>
+                <td>
+                    <input id="txtmobile" class="form-control txtMobileNumber" maxlength="10" placeholder="Enter Mobile Number" />
+                    <span class="text-danger errCustMob"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Enter Email:</td>
+                <td>
+                    <input id="txtemail" class="form-control txtCustomerEmail" placeholder="Enter Email" />
+                    <span class="text-danger errCustEmail"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Select State:</td>
+                <td>
+                    <select asp="StateId" id="StateId" asp-items="@(new SelectList( ViewBag.State,"StateId","StateName"))" class="form-control ddlState">
+                    </select>
+                    <span class="text-danger errState"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Select District:</td>
+                <td>
+                    <select asp="distid" id="distid" class="form-control ddlDistrict">
+                    </select>
+                    <span class="text-danger errDistrict"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Enter City:</td>
+                <td>
+                    <input id="txtcity" class="form-control txtCustCity" placeholder="Enter City Name" />
+                    <span class="text-danger errCustCity"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Enter Pincode:</td>
+                <td>
+                    <input id="txtpincode" class="form-control txtCustPin" placeholder="Enter Pin Code" />
+                    <span class="text-danger errCustPin"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Select Gender:</td>
+                <td>
+                    <input type="radio" id="custgen" name="custgen" class="s_type" value="Male" checked />
+                    <label for="custgen">Male</label>
+                    <input type="radio" id="custgen" name="custgen" class="s_type" value="Female" />
+                    <label for="custgen">Female</label>
+                </td>
+            </tr>
+            <tr>
+                <td>Enter Address:</td>
+                <td>
+                    <textarea id="txtadd"></textarea>
+                    <span class="text-danger errCustAdd"></span>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <input type="button" id="Save" value="Save" class="btn btn-primary btnSaveUpdate " onclick="return Validation()" />
+                </td>
+                <td align="center">
+                    <input type="button" id="Update" value="Update" class="btn btn-primary btnSaveUpdate" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </form>
+
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script type="text/javascript">
 
