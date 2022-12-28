@@ -1,10 +1,10 @@
 ﻿@model CustomerRegistration.Models.Customer;
 @{
     ViewData["Title"] = "Registration";
+
 }
 
 
-<h1>Registration</h1>
 <form>
     <table border="0" align="center">
         <thead>
@@ -16,80 +16,167 @@
             <tr>
                 <td></td>
                 <td>
-                    <input id="txtid" hidden class="form-control " />
+                    @if (Model.CustomerId != 0)
+                    {
+                    <input id="txtid" hidden class="form-control " value="@Model.CustomerId" />
+                    }
+                    
                 </td>
             </tr>
             <tr>
                 <td>Enter Customer Code:</td>
                 <td>
-                    <input id="txtcode" maxlength="15" class="form-control txtCustomerCode" placeholder="Enter Customer Code" />
+                    @if(!String.IsNullOrWhiteSpace(Model.CustomerCode))
+                    {
+                        <input id="txtcode" maxlength="15" class="form-control txtCustomerCode" placeholder="Enter Customer Code" value="@Model.CustomerCode" />
+                    }
+                    else
+                    {
+                        <input id="txtcode" maxlength="15" class="form-control txtCustomerCode" placeholder="Enter Customer Code" />
+                    }
+
                     <span class="text-danger errCustCode"></span>
                 </td>
             </tr>
             <tr>
                 <td>Enter Customer Name:</td>
                 <td>
-                    <input id="txtname" class="form-control txtCustomerName" placeholder="Enter Customer Name" />
-                    <span class="text-danger errCustName"></span>
+                    @if(Model.CustomerName != null)
+                    {
+                        <input id="txtname" class="form-control txtCustomerName" placeholder="Enter Customer Name" value="@Model.CustomerName" />
+                        <span class="text-danger errCustName"></span>
+                    }
+                    else
+                    {
+                        <input id="txtname" class="form-control txtCustomerName" placeholder="Enter Customer Name" />
+                        <span class="text-danger errCustName"></span>
+                    }
+
                 </td>
             </tr>
             <tr>
                 <td>Enter Mobile Number:</td>
                 <td>
-                    <input id="txtmobile" class="form-control txtMobileNumber" maxlength="10" placeholder="Enter Mobile Number" />
+                    @if (Model.CustomerPhone != null)
+                    {
+                        <input id="txtmobile" class="form-control txtMobileNumber" maxlength="10" placeholder="Enter Mobile Number" value="@Model.CustomerPhone"/>
+                    }
+                    else
+                    {
+                        <input id="txtmobile" class="form-control txtMobileNumber" maxlength="10" placeholder="Enter Mobile Number" />
+                    }
                     <span class="text-danger errCustMob"></span>
                 </td>
             </tr>
             <tr>
                 <td>Enter Email:</td>
                 <td>
-                    <input id="txtemail" class="form-control txtCustomerEmail" placeholder="Enter Email" />
+                    @if (Model.CustomerEmail != null)
+                    {
+                        <input id="txtemail" class="form-control txtCustomerEmail" placeholder="Enter Email" value="@Model.CustomerEmail"/>
+                        <span class="text-danger errCustEmail"></span>
+                    }
+                    else
+                    {
+                        <input id="txtemail" class="form-control txtCustomerEmail" placeholder="Enter Email" />
+                    }
                     <span class="text-danger errCustEmail"></span>
                 </td>
             </tr>
             <tr>
                 <td>Select State:</td>
                 <td>
-                    <select asp="StateId" id="StateId" asp-items="@(new SelectList( ViewBag.State,"StateId","StateName"))" class="form-control ddlState">
-                    </select>
+                    @if (Model.StateId != null)
+                    {
+                    <select asp="StateId" id="StateId" asp-items="@(new SelectList( ViewBag.State,"StateId","StateName"))" class="form-control ddlState"><option value="@Model.StateId">@Model.StateName</option></select>
+                    }
+                    else
+                    {
+                        <select asp="StateId" id="StateId" asp-items="@(new SelectList( ViewBag.State,"StateId","StateName"))" class="form-control ddlState">
+                        </select>
+
+                    }
+
                     <span class="text-danger errState"></span>
                 </td>
             </tr>
             <tr>
                 <td>Select District:</td>
                 <td>
-                    <select asp="distid" id="distid" class="form-control ddlDistrict">
+                    @if (Model.DistrictId != null)
+                    {
+                    <select asp="distid" id="distid" class="form-control ddlDistrict" value="@Model.DistrictId">
+                        <option value="@Model.DistrictId">@Model.DistrictName</option>
                     </select>
+                    }
+                    else
+                    {
+                        <select asp="distid" id="distid" class="form-control ddlDistrict">
+                        </select>
+                    }
+
                     <span class="text-danger errDistrict"></span>
                 </td>
             </tr>
             <tr>
                 <td>Enter City:</td>
                 <td>
-                    <input id="txtcity" class="form-control txtCustCity" placeholder="Enter City Name" />
+                    @if (Model.City != null)
+                    {
+                        <input id="txtcity" class="form-control txtCustCity" placeholder="Enter City Name" value="@Model.City" />
+                    }
+                    else
+                    {
+                     <input id="txtcity" class="form-control txtCustCity" placeholder="Enter City Name" />
+                    }
                     <span class="text-danger errCustCity"></span>
                 </td>
             </tr>
             <tr>
                 <td>Enter Pincode:</td>
                 <td>
+                    @if (Model.Pincode != null)
+                     {
+                    <input id="txtpincode" class="form-control txtCustPin" placeholder="Enter Pin Code" value="@Model.Pincode"/>
+                    }
+                    else
+                    {
                     <input id="txtpincode" class="form-control txtCustPin" placeholder="Enter Pin Code" />
+                    }
                     <span class="text-danger errCustPin"></span>
                 </td>
             </tr>
             <tr>
                 <td>Select Gender:</td>
                 <td>
+                    @if (Model.CustomerGender != null)
+                    {
+                        <input type="radio" id="custgen" name="custgen" class="s_type" value="Male" checked />
+                        <label for="custgen">Male</label>
+                        <input type="radio" id="custgen" name="custgen" class="s_type" value="Female" />
+                        <label for="custgen">Female</label>
+                    }
+                    else
+                    {
                     <input type="radio" id="custgen" name="custgen" class="s_type" value="Male" checked />
                     <label for="custgen">Male</label>
                     <input type="radio" id="custgen" name="custgen" class="s_type" value="Female" />
                     <label for="custgen">Female</label>
+                    }
+
                 </td>
             </tr>
             <tr>
                 <td>Enter Address:</td>
                 <td>
-                    <textarea id="txtadd"></textarea>
+                    @if (Model.CustomerAddress != null)
+                    {
+                    <textarea id="txtadd">@Model.CustomerAddress</textarea>
+                    }
+                    else
+                    {
+                        <textarea id="txtadd"></textarea>
+                    }
                     <span class="text-danger errCustAdd"></span>
                 </td>
             </tr>
@@ -98,7 +185,6 @@
                     <input type="button" id="Save" value="Save" class="btn btn-primary btnSaveUpdate " onclick="return Validation()" />
                 </td>
                 <td align="center">
-                    <input type="button" id="Update" value="Update" class="btn btn-primary btnSaveUpdate" />
                 </td>
             </tr>
         </tbody>
@@ -293,10 +379,7 @@
 
     }
 
-    $(window).on("load", function () {
-        $("#Update").hide();
-    });
-
+   
     $(document).ready(function () {
         $("#StateId").change(function () {
             var id = $(this).val();
@@ -329,7 +412,7 @@
                 }
                 else {
                     alert("Data Updated")
-                    location.reload();
+                    window.location.replace("Show")
                 }
             });
 
@@ -338,33 +421,33 @@
             alert("Please Check your Data.");
         }
     });
-    $.getJSON("/Home/Edit", function (data) {
-        var prod = JSON.parse(data);
-        console.log(prod);
-        alert(prod);
-        $("#txtid").val(prod.CustomerId);
-        $("#txtcode").val(prod.CustomerCode);
-        $("#txtname").val(prod.CustomerName);
-        $("#txtmobile").val(prod.CustomerPhone);
-        $("#txtemail").val(prod.CustomerEmail);
-        $("#StateId").val(prod.StateId);
-        $("#distid").empty();
-        $.getJSON("Home/District_Bind", { stateid: prod.StateId }, function (data) {
-            data = JSON.parse(data);
-            $.each(data, function (i, Dist) {
-                $("#distid").append(
-                    `<option value=` + Dist.Value + `>` + Dist.Text + `</option>`
-                );
-                $("#distid").val(prod.DistrictId);
-            });
-        });
-        $("#txtcity").val(prod.City);
-        $("#txtpincode").val(prod.Pincode);
+    //$.getJSON("/Home/Edit", function (data) {
+    //    var prod = JSON.parse(data);
+    //    console.log(prod);
+    //    alert(prod);
+    //    $("#txtid").val(prod.CustomerId);
+    //    $("#txtcode").val(prod.CustomerCode);
+    //    $("#txtname").val(prod.CustomerName);
+    //    $("#txtmobile").val(prod.CustomerPhone);
+    //    $("#txtemail").val(prod.CustomerEmail);
+    //    $("#StateId").val(prod.StateId);
+    //    $("#distid").empty();
+    //    $.getJSON("Home/District_Bind", { stateid: prod.StateId }, function (data) {
+    //        data = JSON.parse(data);
+    //        $.each(data, function (i, Dist) {
+    //            $("#distid").append(
+    //                `<option value=` + Dist.Value + `>` + Dist.Text + `</option>`
+    //            );
+    //            $("#distid").val(prod.DistrictId);
+    //        });
+    //    });
+    //    $("#txtcity").val(prod.City);
+    //    $("#txtpincode").val(prod.Pincode);
 
-        $('input:radio').each(function () {
-            if ($(this).val() == prod.CustomerGender)
-                $(this).attr('checked', 'checked');
-        });
-        $("#txtadd").val(prod.CustomerAddress);
-    });
+    //    $('input:radio').each(function () {
+    //        if ($(this).val() == prod.CustomerGender)
+    //            $(this).attr('checked', 'checked');
+    //    });
+    //    $("#txtadd").val(prod.CustomerAddress);
+    //});
 </script>

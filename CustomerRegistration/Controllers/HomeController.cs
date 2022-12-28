@@ -40,29 +40,38 @@ namespace CustomerRegistration.Controllers
             }
             return ViewBag.State;
         }
-        //[HttpPost]
-        public IActionResult Registration(int? Id)
+
+        public async Task <IActionResult> Registration(int Id)
         {
-            if(Id != null) // Edit
+            try
             {
-                // Edit  Data Bind Code
                 Customer _custDtls = new Customer();
-                HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/Customer/" + Id).Result;
-                if (response.IsSuccessStatusCode)
+                if (Id != 0) // Edit
                 {
-                    string data = response.Content.ReadAsStringAsync().Result;
-                    _custDtls = JsonConvert.DeserializeObject<Customer>(data);
+                    // Edit  Data Bind Code
+                    FillState();
+                    HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/Customer/" + Id).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string data = response.Content.ReadAsStringAsync().Result;
+                        _custDtls = JsonConvert.DeserializeObject<Customer>(data);
+                    }
+                    return View(_custDtls);
                 }
-                return View(_custDtls);
+                else
+                {
+                    FillState();
+                    return View(_custDtls);
+                }
             }
-            else
+            catch(Exception ex)
             {
-                FillState();
+                //Insert Excetion Code
+
             }
             return View();
-
         }
-        public IActionResult Show()
+        public async Task<IActionResult> Show()
         {
             return View();
         }
@@ -100,7 +109,7 @@ namespace CustomerRegistration.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult>Create( int id, Customer cust)
+        public async Task<IActionResult> Create(Customer cust)
         {
             if (cust.CustomerId == 0)
             {
@@ -120,36 +129,35 @@ namespace CustomerRegistration.Controllers
                 response = client.PutAsync(client.BaseAddress + "/Customer/" + cust.CustomerId, content).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    return RedirectToAction("Index");
+                    return View("Show");
                 }
             }
 
             return View();
         }
-        public async Task<IActionResult> Edit(int id)
-        {
-            Customer custlist = new Customer();
-            HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/Customer/" + id).Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                custlist = JsonConvert.DeserializeObject<Customer>(data);
-            }
-            var jsonres = JsonConvert.SerializeObject(custlist);
-           // return Json (jsonres);
-            return View("Registration", jsonres);
+        //public async Task<IActionResult> Edit(int id)
+        //{
+        //    Customer custlist = new Customer();
+        //    HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/Customer/" + id).Result;
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        string data = response.Content.ReadAsStringAsync().Result;
+        //        custlist = JsonConvert.DeserializeObject<Customer>(data);
+        //    }
+        //    var jsonres = JsonConvert.SerializeObject(custlist);
+        //   // return Json (jsonres);
+        //    return View("Registration", jsonres);
 
-        }
-        public int Delete(int id)
+        //}
+        public IActionResult Delete(int id)
         {
             //Customers custlist = new Customers();
             HttpResponseMessage response = client.DeleteAsync(client.BaseAddress + "/Customer/" + id).Result;
             if (response.IsSuccessStatusCode)
             {
-                return 1;
+                return View("Show");
             }
-            return 0;
-            
+            return View("Show");
         }
        
     }

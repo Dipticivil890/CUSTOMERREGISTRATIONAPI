@@ -22,8 +22,15 @@ namespace CUSTOMERREGISTRATIONAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetallCustomer()
         {
-
+            try
+            {
                 return await _IService.GetallCustomerAsync();
+            }
+            catch(Exception ex)
+            {
+                var result = _IService.InsertErrorLogsAsync(ex.Message, DateTime.Now, ex.Source, "SaveCustomerDetails", "StckTrace=" + ex.StackTrace);
+            }
+            return await _IService.GetallCustomerAsync();   
 
         }
         [HttpGet("{id}")]
