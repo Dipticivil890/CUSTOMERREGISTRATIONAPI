@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,6 +15,12 @@ namespace CustomerRegistration.Models
         /// </summary>
         public int CustomerId { get; set; }
 
+
+        /// <summary>
+        /// For EncryptedCustomerID
+        /// </summary>
+        [NotMapped]
+        public string EncryptedCustomerId { get; set; }
         /// <summary>
         /// Customer 15 digits Code
         /// </summary>
@@ -33,6 +40,9 @@ namespace CustomerRegistration.Models
         /// </summary>
         public string CustomerEmail { get; set; } = null;
 
+        [NotMapped]
+        public string encStateId { get; set; } = null;
+
         /// <summary>
         /// Customer State Id
         /// </summary>
@@ -41,10 +51,13 @@ namespace CustomerRegistration.Models
         /// <summary>
         /// Customer District Id
         /// </summary>
-        public int? DistrictId { get; set; }
+      
+           public int? DistrictId { get; set; }
         /// <summary>
         /// Customer City
         /// </summary>
+        [NotMapped]
+        public string encDistrictId { get; set; } = null;
         public string City { get; set; } = null;
         /// <summary>
         /// Customer Address Pincode
@@ -61,17 +74,7 @@ namespace CustomerRegistration.Models
         public string StateName { get; set; } = null;
         public string DistrictName { get; set; } = null;
     }
-    public class State
-    {
-        /// <summary>
-        /// State Id
-        /// </summary>
-        public int? StateId { get; set; }
-        /// <summary>
-        /// State Name
-        /// </summary>
-        public string StateName { get; set; } = null;
-    }
+
 
     public class District
     {
@@ -82,6 +85,8 @@ namespace CustomerRegistration.Models
         /// <summary>
         /// Selected State Id
         /// </summary>
+        [NotMapped]
+        public string encDistrictId { get; set; } = null;
         public int? StateId { get; set; }
         /// <summary>
         /// District Name 
@@ -98,25 +103,10 @@ namespace CustomerRegistration.Models
     }
 
     //--------------------Encrypt & Decrypt-----------------------------
-    public class CustomIDataProtection
-    {
-        private readonly IDataProtector protector;
-        public CustomIDataProtection(IDataProtectionProvider dataProtectionProvider, UniqueCode uniqueCode)
-        {
-            protector = dataProtectionProvider.CreateProtector(uniqueCode.BankIdRouteValue);
-        }
-        public string Decode(string data)
-        {
-            return protector.Protect(data);
-        }
-        public string Encode(string data)
-        {
-            return protector.Unprotect(data);
-        }
-    }
+    //public class CustomDataProtection
+    //{
+    //    public readonly string customerIdValue = "customerIdValue";
 
-    public class UniqueCode
-    {
-        public readonly string BankIdRouteValue = "BankIdRouteValue";
-    }
+    //}
+
 }

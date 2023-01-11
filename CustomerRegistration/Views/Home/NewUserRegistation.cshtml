@@ -1,0 +1,631 @@
+﻿
+@{
+    ViewData["Title"] = "NewUserRegistation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form>
+    <table border="0" align="center">
+        <thead>
+            <tr align="center">
+                <th colspan="2"><h1>REGISTRATION FORM</h1></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td>
+                        <input id="txtCustomerID" value="" hidden class="form-control " />
+
+                </td>
+            </tr>
+            <tr>
+                <td>Customer Code:</td>
+                <td>
+                    <input id="txtCustomerCode" maxlength="15" class="form-control txtCustomerCode" placeholder="Enter Customer Code" value="" autocomplete="off" />
+                    <span class="text-danger errCustCode"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Customer Name:</td>
+                <td>
+                    <input id="txtCustomerName" class="form-control txtCustomerName" placeholder="Enter Customer Name" autocomplete="off" />
+                    <span class="text-danger errCustName"></span>
+
+                </td>
+            </tr>
+            <tr>
+                <td>Mobile No:</td>
+                <td>
+                    <input id="txtCustomerMobile" class="form-control txtMobileNumber" maxlength="10" placeholder="Enter Mobile Number" autocomplete="off" />
+                    <span class="text-danger errCustMob"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>E-mail:</td>
+                <td>
+                    <input id="txtemail" class="form-control txtCustomerEmail" placeholder="Enter Email" autocomplete="off" />
+                    <span class="text-danger errCustEmail"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>State:</td>
+                <td>
+
+                    <select asp="ddlStateId" id="ddlStateId" class="form-control ddlState">
+                    </select>
+                    <span class="text-danger errState"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>District:</td>
+                <td>
+                    <select asp="ddlDistrictId" id="ddlDistrictId" class="form-control ddlDistrict">
+                        <option value="0">---Select---</option>
+                    </select>
+                    <span class="text-danger errDistrict"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>City:</td>
+                <td>
+                    <input id="txtcity" class="form-control txtCustCity" placeholder="Enter City Name" autocomplete="off" />
+                    <span class="text-danger errCustCity"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Pincode:</td>
+                <td>
+                    <input id="txtpincode" class="form-control txtCustPin" placeholder="Enter Pin Code" maxlength="6" autocomplete="off" />
+                    <span class="text-danger errCustPin"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>Gender:</td>
+                <td>
+                    <input type="radio" id="custgen" name="custgen" class="s_type" value="Male" />
+                    <label for="custgen">Male</label>
+                    <input type="radio" id="custgen" name="custgen" class="s_type" value="Female" />
+                    <label for="custgen">Female</label>
+                    <span class="text-danger errCustGen"></span>
+
+                </td>
+            </tr>
+            <tr>
+                <td>Address:</td>
+                <td>
+
+                    <textarea id="txtadd" class="form-control" autocomplete="off" maxlength="1000"></textarea>
+                    <span class="text-danger errCustAdd"></span>
+                    <span id="addChars" class="text-danger">1000 </span><span class="text-danger">Character(s) Remaining</span>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <input type="button" id="Save" value="Save" class="btn btn-primary btnSaveUpdate" />
+                    <input type="button" id="Update" value="Update" class="btn btn-warning btnSaveUpdate" />
+                    @*<input type="button" id="Reset" value="Reset" class="btn btn-danger" />*@
+                    <button id="Reset" class=" btn btn-danger">Reset</button>
+                </td>
+                <td align="center">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<div class="modal fade" id="SubmitModal" tabindex="1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Customer Details</h5>
+            </div>
+            <div class="modal-body">
+                <h6 class="modalMsg"></h6>
+                <h6 class="modalMsg1"></h6>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-info btn-sm submitConfirm hbtn" value="Yes" style="display:none" />
+                <button type="button" class="btn btn-danger btn-sm No hbtn" data-dismiss="modal" aria-label="Close">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="SuccessModal" tabindex="1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="resultMsg" style="color:blue"></h5>
+            </div>
+            <div class="modal-body">
+                <h5 class="msgsuccess"></h5>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-danger btnok" asp-controller="Home" asp-action="ViewUserRegistation">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#Save").show();
+            $("#Update").hide();
+            var encCustId = getUrlVars()["encCustId"];
+            if (encCustId != undefined) {
+                $("#Save").hide();
+                $("#Update").show();
+                EditCustomerDetails(encCustId);
+            }
+            $.ajax({
+                type: "post",
+                url: "/Home/FillStateAgain",
+                datatype: "json",
+                traditional: true,
+                success: function (data) {
+                    data = JSON.parse(data);
+                    var v = "<option value=0>--- Select ---</option>";
+                    $.each(data, function (i, v1) {
+                        v += "<option value=" + v1.Value + ">" + v1.Text + "</option>";
+                    });
+                    $("#ddlStateId").html(v);
+                }
+            });
+
+        });
+
+        $("#ddlStateId").change(function () {
+            $.ajax({
+                type: "get",
+                url: "/Home/FillDistrictAgain",
+                data: { id: $('#ddlStateId').val() },
+                datatype: "json",
+                traditional: true,
+                success: function (data) {
+                    $("#ddlDistrictId").empty();
+                    data = JSON.parse(data);
+                    var v = "<option value=0>--- Select ---</option>";
+                    $.each(data, function (i, v1) {
+                        v += "<option value=" + v1.Value + ">" + v1.Text + "</option>";
+                    });
+                    $("#ddlDistrictId").html(v);
+                }
+            });
+        });
+        $(".btnSaveUpdate").click(function () {
+            var chkValidation = Validation();
+            if (chkValidation == true) {
+                $('.modalMsg').text('Are you sure to save the details ?');
+                $('.submitConfirm').css('display', 'block');
+                $('#SubmitModal').modal("show");
+            }
+        });
+
+        $(".submitConfirm").click(function () {
+            $.ajax({
+                type: "post",
+                url: "/Home/CreateCustomer",
+                data: {
+                    EncryptedCustomerId: $("#txtCustomerID").val()
+                    ,customerCode: $("#txtCustomerCode").val()
+                    , customerName: $("#txtCustomerName").val()
+                    , customerPhone: $("#txtCustomerMobile").val()
+                    , customerEmail: $("#txtemail").val()
+                    , stateId: $("#ddlStateId").val()
+                    , encStateId: $("#ddlStateId").val()
+                    , districtId: $("#ddlDistrictId").val()
+                    , encDistrictId: $("#ddlDistrictId").val()
+                    , city: $("#txtcity").val()
+                    , pincode: $("#txtpincode").val()
+                    , customerGender: $(".s_type:checked").val()
+                    , customerAddress: $("#txtadd").val()
+                },
+                datatype: "json",
+                traditional: true,
+                success: function (data) {
+                    if (data == 1) {
+                        $('.modalMsg').text('');
+                        $('#SubmitModal').modal("hide");
+                        $('.msgsuccess').text('Data Inserted successfully.');
+                        $('#SuccessModal').modal('show');
+                       
+                    }
+                    else if (data == 2) {
+                        $('.modalMsg').text('');
+                        $('#SubmitModal').modal("hide");
+                        $('.msgsuccess').text('Data updated successfully.');
+                        $('#SuccessModal').modal('show');
+                        
+                    }
+                    else {
+                        $('.modalMsg').text('');
+                        $('#SubmitModal').modal("hide");
+                        $('.msgsuccess').text('There is Some Error.');
+                        $('#SuccessModal').modal('show');
+                    }
+                }
+            });
+        });
+
+        function EditCustomerDetails(encCustId) {
+
+            $.ajax({
+                url: "/Home/GetCustomerbyID?encCustId=" + encCustId,
+                type: "GET",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (custdtls) {
+                    custdtls = JSON.parse(custdtls)
+                    $("#txtCustomerID").val(custdtls.EncryptedCustomerId);
+                    $("#txtCustomerCode").val(custdtls.CustomerCode);
+                    $("#txtCustomerName").val(custdtls.CustomerName);
+                    $("#txtCustomerMobile").val(custdtls.CustomerPhone);
+                    $("#txtemail").val(custdtls.CustomerEmail);
+                    $("#ddlStateId").val(custdtls.encStateId);
+                    $("#ddlDistrictId").empty();
+                    $.ajax({
+                        type: "get",
+                        url: "/Home/FillDistrictAgain",
+                        data: { id: custdtls.encStateId  },
+                        datatype: "json",
+                        traditional: true,
+                        success: function (data) {
+                            $("#ddlDistrictId").empty();
+                            data = JSON.parse(data);
+                            var v = "<option value=0>--- Select ---</option>";
+                            $.each(data, function (i, v1) {
+                                v += "<option value=" + v1.Value + ">" + v1.Text + "</option>";
+                            });
+                            $("#ddlDistrictId").html(v);
+                            $("#ddlDistrictId").val(custdtls.encDistrictId);
+                        }
+                    });
+                    $("#txtcity").val(custdtls.City);
+                    $("#txtpincode").val(custdtls.Pincode);
+
+                    $('input:radio').each(function () {
+                        if ($(this).val() == custdtls.CustomerGender)
+                            $(this).attr('checked', 'checked');
+                    });
+                    $("#txtadd").val(custdtls.CustomerAddress);
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+            return false;
+        }
+
+        $("#Reset").click(function () {
+            $("#txtCustomerCode").val("");
+            $("#txtCustomerName").val("");
+            $("#txtCustomerMobile").val("");
+            $("#txtemail").val("");
+            $("#ddlStateId").val("");
+            $("#ddlDistrictId").val("");
+            $("#txtcity").val("");
+            $("#txtpincode").val("");
+            $(".s_type:checked").val("checked", false);
+            $("#txtadd").val("");
+        });
+
+        function getUrlVars() {
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        }
+        var DATAPOINTID = getUrlVars()["ID"];
+        if (DATAPOINTID != undefined) {
+            $("#btnSubmit").html("Update");
+            $("#btnCancel").html("Cancel");
+            bindDataPointById(DATAPOINTID);
+        }
+
+        $('.ddlState').change(function (e) {
+            var StateId = $('.ddlState option:selected').val();
+            if (StateId != 0) {
+                $('.errState').text("");
+                return true;
+            }
+            else {
+                $('.errState').text('Please select state');
+                return false;
+            }
+        });
+
+        $('.ddlDistrict').change(function (e) {
+            var Distid = $('.ddlDistrict option:selected').val();
+            if (Distid != 0) {
+                $('.errDistrict').text("");
+                return true;
+            }
+            else {
+                $('.errDistrict').text('Please select district');
+                return false;
+            }
+        });
+
+        $("#txtCustomerCode").keyup(function (e) {
+            var CustomerCode = $("#txtCustomerCode").val();
+            if (CustomerCode == '') {
+                $('.errCustCode').text('Please enter customer code');
+                return false;
+            }
+            else {
+                if (CustomerCode.length < 15) {
+                    //alert('your message');
+                    $('.errCustCode').text("Please enter 15 digit customer code");
+                    return false;
+                }
+                else {
+                    $('.errCustCode').text("");
+                    return true;
+                }
+                $('.errCustCode').text("");
+                return true;
+            }
+        });
+
+        $('.txtCustomerCode').keypress(function (e) {
+            var charCode = (e.which) ? e.which : event.keyCode
+            if (String.fromCharCode(charCode).match(/[^0-9]/g))
+                return false;
+        });
+
+        $("#txtCustomerName").keyup(function (e) {
+            var CustomerName = $("#txtCustomerName").val();
+            if (CustomerName == '') {
+                $('.errCustName').text('Please enter name');
+                return false;
+            }
+            else {
+                if (CustomerName.length > 25) {
+                    $('.errCustName').text("Name should be less than 25 character");
+                    return false;
+                }
+                else {
+                    $('.errCustName').text("");
+                    return true;
+                }
+            }
+        });
+        $('#txtCustomerName').keypress(function (e) {
+            var regex = new RegExp("^[a-zA-Z ]+$");
+            var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+            if (regex.test(str)) {
+                $('.errCustName').text("");
+                return true;
+            }
+            else {
+                e.preventDefault();
+                $('.errCustName').text('Please Enter Alphabate');
+                return false;
+            }
+        });
+        $("#txtCustomerMobile").keyup(function (e) {
+            var CustomerPhone = $("#txtCustomerMobile").val();
+            if (CustomerPhone == '') {
+                $('.errCustMob').text('Please enter Mobile Number');
+                return false;
+            }
+            else {
+                if (CustomerPhone.length < 10) {
+                    //alert('your message');
+                    $('.errCustMob').text("Please enter 10 digit number");
+                    return false;
+                }
+                else {
+                    $('.errCustMob').text("");
+                    return true;
+                }
+                return true;
+            }
+        });
+        $('#txtCustomerMobile').keypress(function (e) {
+
+            var charCode = (e.which) ? e.which : event.keyCode
+
+            if (String.fromCharCode(charCode).match(/[^0-9]/g))
+
+                return false;
+        });
+        $("#txtemail").keyup(function (e) {
+            var CustomerEmail = $("#txtemail").val();
+            if (CustomerEmail == '') {
+                $('.errCustEmail').text('Please enter Email');
+                return false;
+            }
+            else {
+                emailvalidation();
+            }
+        });
+        function emailvalidation() {
+            var email = $("#txtemail").val();
+            var filter = /^([a-zA-Z0-9_\.\-])+\@@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            if (!filter.test(email)) {
+                //alert('Please provide a valid email address');
+                $(".errCustEmail").text(email + " is not a valid email");
+                email.focus;
+                return false;
+            } else {
+                $(".errCustEmail").text("");
+                return true;
+            }
+        }
+        $("#txtcity").keyup(function (e) {
+            var CustomerCity = $("#txtcity").val();
+            if (CustomerCity == '') {
+                $('.errCustCity').text('Please enter City');
+                return false;
+            }
+            else {
+                if (CustomerCity.length > 15) {
+
+                    $('.errCustCity').text("City should be less than 15 character");
+                    return false;
+                }
+                else {
+                    $('.errCustCity').text("");
+                    return true;
+                }
+            }
+        });
+        $('#txtcity').keypress(function (e) {
+            var regex = new RegExp("^[a-zA-Z ]+$");
+            var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+            if (regex.test(str)) {
+                $('.errCustCity').text("");
+                return true;
+            }
+            else {
+                e.preventDefault();
+                $('.errCustCity').text('Please Enter Alphabate');
+                return false;
+            }
+        });
+        $("#txtpincode").keyup(function (e) {
+            var CustomerPin = $("#txtpincode").val();
+            if (CustomerPin == '') {
+                $('.errCustPin').text('Please enter Pincode');
+                return false;
+            }
+            else {
+                if (CustomerPin.length < 6) {
+                    $('.errCustPin').text("Pincode must have 6 digits");
+                    return false;
+                }
+                else {
+                    $('.errCustPin').text("");
+                    return true;
+                }
+            }
+        });
+        $('#txtpincode').keypress(function (e) {
+
+            var charCode = (e.which) ? e.which : event.keyCode
+
+            if (String.fromCharCode(charCode).match(/[^0-9]/g))
+
+                return false;
+        });
+        var maxLength = 1000;
+        $("#txtadd").keyup(function (e) {
+            var CustomerAdd = $("#txtadd").val();
+            var textlen = maxLength - $(this).val().length;
+            $('#addChars').text(textlen);
+            if (CustomerAdd == '') {
+                $('.errCustAdd').text('Please enter Address');
+                return false;
+            }
+            else {
+                $('.errCustAdd').text("");
+                return true;
+            }
+        });
+
+        function Validation() {
+            var chk = 0;
+            var CustomerCode = $("#txtCustomerCode").val();
+            var CustomerName = $("#txtCustomerName").val();
+            var CustomerPhone = $('.txtMobileNumber').val();
+            var CustomerEmail = $('.txtCustomerEmail').val();
+            var StateId = $('.ddlState option:selected').val();
+            var Distid = $('.ddlDistrict option:selected').val();
+            var CustomerCity = $('.txtCustCity').val();
+            var CustomerAddress = $('#txtadd').val();
+            var CustomerPin = $("#txtpincode").val();
+            if (CustomerCode != '' && CustomerCode.length == 15) {
+                $('.errCustCode').text();
+                chk = 1;
+                if (CustomerName != '' && CustomerName.length <= 25) {
+                    $('.errCustName').text();
+                    chk = 1;
+
+                    if (CustomerPhone != '' && CustomerPhone.length == 10) {
+                        $('.errCustMob').text();
+                        chk = 1;
+                        if (CustomerEmail != '' && emailvalidation() == true) {
+                            $('.errCustEmail').text();
+                            chk = 1;
+                            if (StateId != 0) {
+                                $('.errState').text();
+                                chk = 1;
+                                if (Distid != 0) {
+                                    $('.errDistrict').text();
+                                    chk = 1;
+                                    if (CustomerCity != '' && CustomerCity.length <= 15) {
+                                        $('.errCustCity').text();
+                                        chk = 1;
+                                        if (CustomerPin != '' && CustomerPin.length == 6) {
+                                            $('.errCustPin').text();
+                                            chk = 1;
+                                            if ($('input[type=radio][name=custgen]:checked').length != 0) {
+                                                $('.errCustGen').text("");
+                                                chk = 1;
+                                                if (CustomerAddress != '' && CustomerAddress.length <= 1000) {
+                                                    $('.errCustAdd').text();
+                                                    if (chk == 1) {
+                                                        return true
+                                                    }
+                                                    else {
+                                                        return false;
+                                                    }
+                                                }
+                                                else {
+                                                    $('.errCustAdd').text('Please enter Address');
+                                                    return;
+                                                }
+                                            }
+                                            else {
+                                                $('.errCustGen').text("Please Select Gender");
+                                                chk = 0;
+                                            }
+                                        }
+                                        else {
+                                            $('.errCustPin').text('Please enter 6 digit Pin');
+                                            chk = 0;
+                                        }
+                                    }
+                                    else {
+                                        $('.errCustCity').text('Please enter City');
+                                        chk = 0;
+                                    }
+                                }
+                                else {
+                                    $('.errDistrict').text('Please Select District');
+                                    chk = 0;
+                                }
+                            }
+                            else {
+                                $('.errState').text('Please Select State');
+                                chk = 0;
+                            }
+                        }
+                        else {
+                            $('.errCustEmail').text('Please enter valid Email');
+                            chk = 0;
+                        }
+                    }
+                    else {
+                        $('.errCustMob').text('Please enter 10 digits Mobile Number');
+                        chk = 0;
+                    }
+                }
+                else {
+                    $('.errCustName').text('Please enter Name');
+                    chk = 0;
+                }
+            }
+            else {
+                $('.errCustCode').text('Please enter 15 digit customer code');
+                chk = 0;
+            }
+        }
+    </script>
+
+}

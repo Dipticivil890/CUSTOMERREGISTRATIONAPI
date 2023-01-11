@@ -25,8 +25,7 @@ namespace CustomerRegistration
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddSingleton<UniqueCode>();
-            services.AddSingleton<CustomIDataProtection>();
+            //services.AddSingleton<CustomDataProtection>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,7 +49,7 @@ namespace CustomerRegistration
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Registration}/{id?}");
+                    pattern: "{controller=Home}/{action=NewUserRegistation}/{id?}");
             });
         }
     }

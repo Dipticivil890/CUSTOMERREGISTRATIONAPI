@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,6 +15,9 @@ namespace CUSTOMERREGISTRATIONAPI.Model
         /// </summary>
         public int CustomerId { get; set; }
 
+
+        [NotMapped]
+        public string EncryptedCustomerId { get; set; }
         /// <summary>
         /// Customer 15 digits Code
         /// </summary>
@@ -37,11 +41,14 @@ namespace CUSTOMERREGISTRATIONAPI.Model
         /// Customer State Id
         /// </summary>
         public int? StateId { get; set; }
-
+        [NotMapped]
+        public string encStateId { get; set; } = null;
         /// <summary>
         /// Customer District Id
         /// </summary>
         public int? DistrictId { get; set; }
+        [NotMapped]
+        public string encDistrictId { get; set; } = null;
         /// <summary>
         /// Customer City
         /// </summary>
@@ -96,4 +103,11 @@ namespace CUSTOMERREGISTRATIONAPI.Model
         public string ErrorLineNo { get; set; }
         public string ErrorStackTrace { get; set; }
     }
+
+    ////--------------------Encrypt & Decrypt-----------------------------
+    //public class CustomDataProtection
+    //{
+    //    public readonly string customerIdValue = "customerIdValue";
+
+    //}
 }

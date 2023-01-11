@@ -1,3 +1,4 @@
+using CUSTOMERREGISTRATIONAPI.Model;
 using CUSTOMERREGISTRATIONAPI.Repository;
 using CUSTOMERREGISTRATIONAPI.Service;
 using Microsoft.AspNetCore.Builder;
@@ -30,6 +31,7 @@ namespace CUSTOMERREGISTRATIONAPI
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddSwaggerGen();
+            //services.AddSingleton<CustomDataProtection>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
 ﻿using CustomerRegistration.Models;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
@@ -9,171 +10,225 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CustomerRegistration.Controllers
 {
     public class HomeController : Controller
     {
+        CommonHelper ch = new CommonHelper();
         Uri baseurl = new Uri("http://localhost:31916/api");
 
         HttpClient client;
-        private readonly CustomIDataProtection protector;
-        public HomeController(CustomIDataProtection customIDataProtection)
+        public HomeController()
         {
             client = new HttpClient();
             client.BaseAddress = baseurl;
-            protector = customIDataProtection;
-        }
-        public List<Customer> FillState()
-        {
-            List<Customer> lstcat = new List<Customer>();
-            HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/State").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                lstcat = JsonConvert.DeserializeObject<List<Customer>>(data);
-                lstcat.Insert(0, new Customer { StateId = 0, StateName = "-- Select --" });
-                ViewBag.State = lstcat;
-            }
-            return ViewBag.State;
-        }
-        public List<District> FillDistrict(int? id)
-        {
-            List<District> lstdist = new List<District>();
-            HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/District/" + id).Result;
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                lstdist = JsonConvert.DeserializeObject<List<District>>(data);
-                lstdist.Insert(0, new District { DistrictId = 0, DistrictName = "Select One" });
-                ViewBag.dist = lstdist;
-            }
-            return ViewBag.dist;
         }
 
-        public async Task <IActionResult> Registration(int Id)
+        #region------------------User Registation Page------------------------------
+
+        public IActionResult NewUserRegistation(string encCustId)
+        {
+            return View("NewUserRegistation");
+        }
+        #endregion------------------------------------------------------------------
+
+
+        #region------------------------Bind State-----------------------------------
+        public JsonResult FillStateAgain()
+        {
+            HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/State").Result;
+            List<SelectListItem> statelist = new List<SelectListItem>();
+            if (response.IsSuccessStatusCode)
+            {
+                var data = response.Content.ReadAsStringAsync().Result;
+                var statelst= JsonConvert.DeserializeObject<List<State>>(data);
+                foreach (State st in statelst)
+                {
+
+                    statelist.Add(new SelectListItem
+                    {
+                        Text = st.StateName,
+                        Value =ch.Encrypt(st.StateId.ToString())
+                    });
+
+                }
+               var _statelist = JsonConvert.SerializeObject(statelist);
+                return Json(_statelist);
+            }
+            return Json("");
+        }
+
+        
+        #endregion-----------------------------------------------------------
+
+
+        #region-----------------------Bind District---------------------------------
+        public JsonResult FillDistrictAgain(string id)
+        {
+            var stateid = ch.Decrypt(id);
+            HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/District/" + stateid).Result;
+            List<SelectListItem> Districtlist = new List<SelectListItem>();
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                var Distlst = JsonConvert.DeserializeObject<List<District>>(data);
+                foreach (District dt in Distlst)
+                {
+
+                    Districtlist.Add(new SelectListItem
+                    {
+                        Text = dt.DistrictName,
+                        Value = ch.Encrypt(dt.DistrictId.ToString())
+                    });
+
+                }
+                var _distlist = JsonConvert.SerializeObject(Districtlist);
+                return Json(_distlist);
+            }
+            return Json("");
+        }
+        #endregion------------------------------------------------------------------
+
+
+        #region---------------------Save & Update Customer--------------------------
+        [HttpPost]
+        public async Task<JsonResult> CreateCustomer(Customer cust)
         {
             try
             {
-                Customer _custDtls = new Customer();
-                if (Id != 0) // Edit
+                if (cust.EncryptedCustomerId == null)
                 {
-                    // Edit  Data Bind Code
-                    FillState();
-                    HttpResponseMessage response = await client.GetAsync(client.BaseAddress + "/Customer/" + Id);
-                    
+                    cust.StateId = Convert.ToInt32(ch.Decrypt(cust.encStateId));
+                    cust.DistrictId = Convert.ToInt32(ch.Decrypt(cust.encDistrictId));
+                    string data = JsonConvert.SerializeObject(cust);
+                    StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync(client.BaseAddress + "/Customer/", content);
                     if (response.IsSuccessStatusCode)
-                    {   
-                        string data = response.Content.ReadAsStringAsync().Result;
-                        _custDtls = JsonConvert.DeserializeObject<Customer>(data);
-                        if(_custDtls.StateId != null)
-                        {
-                            FillDistrict(_custDtls.StateId);
-                        }
+                    {
+                        return Json(1);
                     }
-                    return View(_custDtls);
                 }
                 else
                 {
-                    FillState();
-                    return View(_custDtls);
+                    
+                    cust.CustomerId = Convert.ToInt32(ch.Decrypt(cust.EncryptedCustomerId));
+                    cust.StateId = Convert.ToInt32(ch.Decrypt(cust.encStateId));
+                    cust.DistrictId = Convert.ToInt32(ch.Decrypt(cust.encDistrictId));
+                    string data = JsonConvert.SerializeObject(cust);
+                    HttpResponseMessage response;
+                    StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+                    response = await client.PutAsync(client.BaseAddress + "/Customer/" + cust.CustomerId, content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return Json(2);
+                    }
                 }
+
             }
             catch(Exception ex)
             {
-                
 
+            }
+            return Json("");
+        }
+
+        #endregion------------------------------------------------------------------
+
+
+        #region-----------------------View Customers Page---------------------------
+
+        public IActionResult ViewUserRegistation()
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
             return View();
         }
-        public async Task<IActionResult> Show()
-        {
-           return View();
-        }
-        public async Task<JsonResult> District_Bind(int stateid)
-        {
-            HttpResponseMessage response =await client.GetAsync(client.BaseAddress + "/District/" + stateid);
-            List<SelectListItem> distlist = new List<SelectListItem>();
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                var listcat = JsonConvert.DeserializeObject<List<District>>(data);
-                foreach(District dr in listcat)
-                {
-                    distlist.Add(new SelectListItem
-                    {
-                        Text = dr.DistrictName,
-                        Value = dr.DistrictId.ToString()
-                    });
-                }
-            }
-            var jsonres =JsonConvert.SerializeObject(distlist);
-             return Json(jsonres);
-        }
 
-        public async Task<JsonResult> GetCustomers()
+        #endregion-------------------------------------------------------------------
+
+
+        #region----------------------BindCustomers----------------------------------
+        public async Task<JsonResult> GetAllCustomers()
         {
+            List<Customer> CustomerList = new List<Customer>();
             string data = null;
-            HttpResponseMessage response =await client.GetAsync(client.BaseAddress + "/Customer");
+            HttpResponseMessage response = await client.GetAsync(client.BaseAddress + "/Customer");
             if (response.IsSuccessStatusCode)
             {
                 data = response.Content.ReadAsStringAsync().Result;
+                var custlist = JsonConvert.DeserializeObject<List<Customer>>(data);
+                foreach (Customer cust in custlist)
+                {
+                    CustomerList.Add(new Customer
+                    {
+                        EncryptedCustomerId = ch.Encrypt(cust.CustomerId.ToString()),
+                        CustomerCode=cust.CustomerCode,
+                        CustomerName=cust.CustomerName,
+                        CustomerPhone=cust.CustomerPhone,
+                        CustomerEmail=cust.CustomerEmail,
+                        StateName=cust.StateName,
+                        DistrictName=cust.DistrictName,
+                        City=cust.City,
+                        Pincode=cust.Pincode,
+                        CustomerGender=cust.CustomerGender,
+                        CustomerAddress=cust.CustomerAddress
+                    });;
+                }
             }
-            return Json(data);
+            var _CustList = JsonConvert.SerializeObject(CustomerList);
+            return Json(_CustList);
 
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(Customer cust)
-        {
-            if (cust.CustomerId == 0)
-            {
-                string data = JsonConvert.SerializeObject(cust);
-                StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                HttpResponseMessage response =await client.PostAsync(client.BaseAddress + "/Customer/", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Index");
-                }
-            }
-            else
-            {
-                string data = JsonConvert.SerializeObject(cust);
-                HttpResponseMessage response;
-                StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                response =await client.PutAsync(client.BaseAddress + "/Customer/" + cust.CustomerId, content);
-                if (response.IsSuccessStatusCode)
-                {
-                    return View("Show");
-                }
-            }
+        #endregion------------------------------------------------------------------
 
-            return View();
+
+        #region-------------------Bind Customer Data--------------------------------
+        public async Task<JsonResult> GetCustomerbyID(string encCustId)
+        {
+           
+            var x = encCustId + "=";
+            var id = ch.Decrypt(x);
+            Customer custlist = new Customer();
+            //Customer customerlist = new Customer();
+            HttpResponseMessage response =await client.GetAsync(client.BaseAddress + "/Customer/" + id);
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                custlist = JsonConvert.DeserializeObject<Customer>(data);
+                custlist.EncryptedCustomerId = ch.Encrypt(custlist.CustomerId.ToString());
+                custlist.encStateId = ch.Encrypt(custlist.StateId.ToString());
+                custlist.encDistrictId = ch.Encrypt(custlist.DistrictId.ToString());
+
+            }
+            var jsonres = JsonConvert.SerializeObject(custlist);
+            return Json(jsonres);
         }
-        //public async Task<IActionResult> Edit(int id)
-        //{
-        //    Customer custlist = new Customer();
-        //    HttpResponseMessage response = client.GetAsync(client.BaseAddress + "/Customer/" + id).Result;
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        string data = response.Content.ReadAsStringAsync().Result;
-        //        custlist = JsonConvert.DeserializeObject<Customer>(data);
-        //    }
-        //    var jsonres = JsonConvert.SerializeObject(custlist);
-        //   // return Json (jsonres);
-        //    return View("Registration", jsonres);
+        #endregion------------------------------------------------------------------
 
-        //}
-        public int Delete(int id)
+
+        #region----------------Delete Customer Details------------------------------
+        public int Delete(string encCustId)
         {
-            HttpResponseMessage response = client.DeleteAsync(client.BaseAddress + "/Customer/" + id).Result;
+            var custid = ch.Decrypt(encCustId);
+            HttpResponseMessage response = client.DeleteAsync(client.BaseAddress + "/Customer/" + custid).Result;
             if (response.IsSuccessStatusCode)
             {
                 return 1;
             }
             return 0;
         }
-       
+        #endregion------------------------------------------------------------------
+
+        
     }
 }

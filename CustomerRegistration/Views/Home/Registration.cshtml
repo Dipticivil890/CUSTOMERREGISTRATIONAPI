@@ -1,4 +1,5 @@
 ﻿@model CustomerRegistration.Models.Customer;
+
 @{
     ViewData["Title"] = "Registration";
 
@@ -16,9 +17,9 @@
             <tr>
                 <td></td>
                 <td>
-                    @if (Model.CustomerId != 0 || Model.CustomerId != null)
+                    @if (Model.EncryptedCustomerId != null)
                     {
-                        <input id="txtid" hidden class="form-control " value="@Model.CustomerId" />
+                        <input id="txtid" hidden class="form-control " value="@Model.EncryptedCustomerId" />
                     }
                     else
                     {
@@ -36,7 +37,7 @@
                     }
                     else
                     {
-                        <input id="txtCustomerCode" maxlength="15" class="form-control txtCustomerCode" placeholder="Enter Customer Code" autocomplete="off"/>
+                        <input id="txtCustomerCode" maxlength="15" class="form-control txtCustomerCode" placeholder="Enter Customer Code" autocomplete="off" />
                     }
 
                     <span class="text-danger errCustCode"></span>
@@ -51,7 +52,7 @@
                     }
                     else
                     {
-                        <input id="txtname" class="form-control txtCustomerName" placeholder="Enter Customer Name" autocomplete="off"/>
+                        <input id="txtname" class="form-control txtCustomerName" placeholder="Enter Customer Name" autocomplete="off" />
                     }
                     <span class="text-danger errCustName"></span>
 
@@ -66,7 +67,7 @@
                     }
                     else
                     {
-                        <input id="txtmobile" class="form-control txtMobileNumber" maxlength="10" placeholder="Enter Mobile Number" autocomplete="off"/>
+                        <input id="txtmobile" class="form-control txtMobileNumber" maxlength="10" placeholder="Enter Mobile Number" autocomplete="off" />
                     }
                     <span class="text-danger errCustMob"></span>
                 </td>
@@ -76,8 +77,8 @@
                 <td>
                     @if (Model.CustomerEmail != null)
                     {
-                        <input id="txtemail" class="form-control txtCustomerEmail" placeholder="Enter Email" value="@Model.CustomerEmail" autocomplete="off"/>
-                        
+                        <input id="txtemail" class="form-control txtCustomerEmail" placeholder="Enter Email" value="@Model.CustomerEmail" autocomplete="off" />
+
                     }
                     else
                     {
@@ -108,8 +109,8 @@
                     @if (Model.DistrictId != null)
                     {
                         @*<select asp="distid" id="distid" class="form-control ddlDistrict" value="@Model.DistrictId">
-                <option value="@Model.DistrictId">@Model.DistrictName</option>
-            </select>*@
+                                <option value="@Model.DistrictId">@Model.DistrictName</option>
+                            </select>*@
 
                         @Html.DropDownListFor(model => model.DistrictId, new SelectList(ViewBag.dist, "DistrictId", "DistrictName"), new { @class = "form-control ddlDistrict", name = "distid", id = "distid" })
 
@@ -127,7 +128,7 @@
                 <td>
                     @if (Model.City != null)
                     {
-                        <input id="txtcity" class="form-control txtCustCity" placeholder="Enter City Name" value="@Model.City" autocomplete="off"/>
+                        <input id="txtcity" class="form-control txtCustCity" placeholder="Enter City Name" value="@Model.City" autocomplete="off" />
                     }
                     else
                     {
@@ -141,7 +142,7 @@
                 <td>
                     @if (Model.Pincode != null)
                     {
-                        <input id="txtpincode" class="form-control txtCustPin" placeholder="Enter Pin Code" maxlength="6" value="@Model.Pincode" autocomplete="off"/>
+                        <input id="txtpincode" class="form-control txtCustPin" placeholder="Enter Pin Code" maxlength="6" value="@Model.Pincode" autocomplete="off" />
                     }
                     else
                     {
@@ -189,7 +190,7 @@
                     {
                         <textarea id="txtadd" class="form-control" autocomplete="off" maxlength="1000">@Model.CustomerAddress
                         </textarea>
-  
+
                         <span class="text-danger errCustAdd"></span>
                     }
                     else
@@ -239,13 +240,12 @@
                 <h5 class="msgsuccess"></h5>
             </div>
             <div class="modal-footer">
-              <a class="btn btn-danger btnok" asp-controller="Home" asp-action="Show">Close</a>
+                <a class="btn btn-danger btnok" asp-controller="Home" asp-action="Show">Close</a>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="~/js/site.js"></script>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script type="text/javascript">
@@ -393,8 +393,7 @@
                 $('.errCustCity').text("City should be less than 15 character");
                 return false;
             }
-            else
-            {
+            else {
                 $('.errCustCity').text("");
                 return true;
             }
@@ -470,11 +469,11 @@
         if (CustomerCode != '' && CustomerCode.length == 15) {
             $('.errCustCode').text();
             chk = 1;
-            if (CustomerName != '' && CustomerName.length <=25) {
+            if (CustomerName != '' && CustomerName.length <= 25) {
                 $('.errCustName').text();
                 chk = 1;
 
-                if (CustomerPhone != '' && CustomerPhone.length==10) {
+                if (CustomerPhone != '' && CustomerPhone.length == 10) {
                     $('.errCustMob').text();
                     chk = 1;
                     if (CustomerEmail != '' && emailvalidation() == true) {
@@ -486,7 +485,7 @@
                             if (Distid != 0) {
                                 $('.errDistrict').text();
                                 chk = 1;
-                                if (CustomerCity != '' && CustomerCity.length <=15) {
+                                if (CustomerCity != '' && CustomerCity.length <= 15) {
                                     $('.errCustCity').text();
                                     chk = 1;
                                     if (CustomerPin != '' && CustomerPin.length == 6) {
@@ -495,7 +494,7 @@
                                         if ($('input[type=radio][name=custgen]:checked').length != 0) {
                                             $('.errCustGen').text("");
                                             chk = 1;
-                                            if (CustomerAddress != '' && CustomerAddress.length <=1000) {
+                                            if (CustomerAddress != '' && CustomerAddress.length <= 1000) {
                                                 $('.errCustAdd').text();
                                                 if (chk == 1) {
                                                     return true
@@ -555,7 +554,7 @@
         }
     }
 
- 
+
 
     $(document).ready(function () {
         $("#StateId").change(function () {
@@ -583,7 +582,7 @@
 
     $(".submitConfirm").click(function () {
         var CustRecord = {
-              customerId: $("#txtid").val()
+            customerId: $("#txtid").val()
             , customerCode: $("#txtCustomerCode").val()
             , customerName: $("#txtname").val()
             , customerPhone: $("#txtmobile").val()
